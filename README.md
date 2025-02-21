@@ -1,2 +1,2 @@
-# Desgin-patterns
+# Design-patterns
 Blueprints for problem solving
