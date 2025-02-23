@@ -44,10 +44,17 @@ class Streamer: public ISubject{
 class Watcher : public IObserver{
     private:
         std::string name;
+        ISubject& subject;
     public:
-        explicit Watcher(std::string _name): name(_name){};
+        //make it the responsibility of the observer
+        //to be attached to a subject
+        explicit Watcher(ISubject& _subject, std::string _name): name(_name), subject(_subject){
+            subject.addObserver(this);
+        };
         
-        ~Watcher() {};
+        ~Watcher(){
+            subject.removeObserver(this);
+        }
         
         void onNotify() override{
             std::cout<<name+" watching"<<std::endl;
@@ -57,11 +64,8 @@ class Watcher : public IObserver{
 int main(){
     Streamer streamer("India's got Latent");
     
-    Watcher w1("somya");
-    Watcher w2("aditya");
-    
-    streamer.addObserver(&w1);
-    streamer.addObserver(&w2);
+    Watcher w1(streamer, "somya");
+    Watcher w2(streamer, "aditya");
     
     streamer.notify();
     return 0;
