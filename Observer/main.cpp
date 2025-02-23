@@ -1,47 +1,69 @@
 #include <forward_list>
 #include <iostream>
+#include <string>
 
-class Observer{
-    private:
-        std::string name;
+class IObserver{
     public:
-        Observer(std::string _name) : name(_name){}
-        void onNotify(){
-            std::cout<<name+" notified by the subject"<<std::endl;
-        }
+        IObserver(){};
+        
+        ~IObserver(){};
+        
+        virtual void onNotify() = 0;
 };
 
-class Subject{
+class ISubject{
     private:
-        std::forward_list<Observer*> observers;
+        std::forward_list<IObserver*> observers;
     public:
-        void addObserver(Observer* observer){
+        ISubject(){};
+        
+        ~ISubject(){};
+        
+        virtual void addObserver(IObserver* observer){
             observers.push_front(observer);
         }
-        void removeObserver(Observer* observer){
+        virtual void removeObserver(IObserver* observer){
             observers.remove(observer);
         }
-        void notify(){
+        virtual void notify(){
             for(auto& o: observers){
                 o->onNotify();
             }
         }
 };
 
+class Streamer: public ISubject{
+    private:
+       std::string show;
+    public: 
+        Streamer(std::string _show): show(_show){};
+        
+        ~Streamer(){};
+};
+
+class Watcher : public IObserver{
+    private:
+        std::string name;
+    public:
+        explicit Watcher(std::string _name): name(_name){};
+        
+        ~Watcher() {};
+        
+        void onNotify() override{
+            std::cout<<name+" watching"<<std::endl;
+        }
+};
+
 int main(){
-    Subject sub;
+    Streamer streamer("India's got Latent");
     
-    Observer o1("somya");
-    Observer o2("wang");
-    Observer o3("lasaro");
+    Watcher w1("somya");
+    Watcher w2("aditya");
     
-    sub.addObserver(&o1);
-    sub.addObserver(&o2);
-    sub.addObserver(&o3);
+    streamer.addObserver(&w1);
+    streamer.addObserver(&w2);
     
-    sub.removeObserver(&o1);
-    
-    sub.notify();
+    streamer.notify();
     return 0;
 }
 
